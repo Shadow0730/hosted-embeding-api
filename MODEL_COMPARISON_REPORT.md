@@ -9,6 +9,7 @@ This report describes the three configured embedding models, the objects and fil
 | `openai-small` | OpenAI `text-embedding-3-small` | 1,536 | `data[].embedding`; token usage from `usage.prompt_tokens` | $0.02 / 1M input tokens |
 | `openai-large` | OpenAI `text-embedding-3-large` | 3,072 | `data[].embedding`; token usage from `usage.prompt_tokens` | $0.13 / 1M input tokens |
 | `voyage-4` | Voyage AI `voyage-4` | 1,024 (default) | `embeddings`; token usage from `total_tokens` | $0.06 / 1M tokens |
+| `voyage-law-2` | Voyage AI `voyage-law-2` | 1,024 | `embeddings`; token usage from `total_tokens` | $0.12 / 1M input tokens |
 
 The two OpenAI models use the same `OPENAI_API_KEY`; Voyage uses `VOYAGE_API_KEY`. Missing keys cause those provider entries to be skipped. Configured prices are list-price estimates and do not subtract free allowances, account credits, discounts, or billing adjustments. Voyage's pricing documentation lists a first-200-million-token free allowance for `voyage-4`; the project's estimate intentionally uses the full list price.
 
