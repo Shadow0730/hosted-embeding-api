@@ -1,0 +1,205 @@
+{
+  "_instructions": "These 50 evaluation questions are based on the local PDFs. Page numbers start at 1. Review the questions and supporting pages before running paid evaluations.",
+  "questions": [
+    {
+      "question": "What formula is used to calculate normal stress?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "What is the SI unit used to measure force?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "How is engineering strain calculated from a change in length?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "Within the linear elastic range, how are stress, Young's modulus, and strain related?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "How does elastic deformation differ from plastic deformation after a load is removed?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "A rod carries 10,000 N over a cross-sectional area of 100 square millimetres. What nominal tensile stress does the example calculate?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "For a calculated stress of 100 MPa and a material yield strength of 250 MPa, what simplified factor of safety against yielding is given?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "Which effects does the simplified tension-rod factor-of-safety calculation ignore?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "For a perpendicular force, how is torque calculated from force and lever arm?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "What torque results from a 40 N perpendicular force applied 0.25 m from a shaft?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "How is mechanical power in rotational motion calculated from torque and angular speed?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "What factors should engineers consider when selecting a material, and what tradeoff is noted between steel and aluminium?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "What three mechanisms transfer heat, and can they occur together in real equipment?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "What is conduction, and what example of it is given?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "What is convection, and what moving-fluid example is described?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "How does radiation transfer energy, and does it require a material medium?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "What equation is used for steady one-dimensional heat conduction through a flat plate?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "Using k = 15 W/(m K), area = 0.02 m^2, temperature difference = 20 K, and thickness = 0.01 m, what heat-transfer rate does the plate example calculate?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "Which effects are neglected in the idealized plate heat-transfer calculation?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "Can fatigue damage develop when repeated-load peak stress is below static yield strength?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "Where do fatigue cracks often start according to the notes?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "What mechanical problems can vibration indicate?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "When can resonance occur, and what can it do to vibration amplitude?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "Name maintenance activities suggested for a machine reliability plan.",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "What does a rising bearing temperature indicate, and what does it not prove by itself?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "What checks may be included when verifying a fan shaft design?",
+      "supporting_pages": [{"filename": "mechanical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "What is voltage, and in what unit is it measured?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "What is electric current, and in what unit is it measured?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "What does resistance do in a circuit, and what unit measures it?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "What equation does Ohm's law give for an ideal resistor at fixed conditions?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "What current flows through a 6-ohm resistor connected across a 12 V DC supply?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "How much power does the 6-ohm resistor dissipate in the 12 V example?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "Besides P = V x I, what other power formula for a resistor is given?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "In a series circuit, how does current behave and how are resistances combined?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "What is the total series resistance of 4-ohm and 8-ohm resistors?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "In a parallel circuit, what electrical quantity is shared by the components?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "What is the equivalent resistance of two 6-ohm resistors connected in parallel?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "What do Kirchhoff's current law and voltage law state?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "How should a voltmeter and an ammeter be connected, and what are their ideal resistances?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 1}]
+    },
+    {
+      "question": "Where do capacitors and inductors store energy, and what stored-energy formula is given for each?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "What units are used to measure capacitance and inductance?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "Which capacitor and inductor quantities cannot change instantaneously in the idealized model?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "How is the time constant of a simple RC charging circuit calculated?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "What time constant results from R = 10,000 ohms and C = 100 microfarads?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "About what percentage of its final voltage does a charging capacitor reach after one time constant?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "About what percentage of its final voltage does a charging capacitor reach after five time constants?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "For sinusoidal voltage and current, how are real power, RMS voltage, RMS current, and power factor related?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "For a 230 V rms load drawing 2 A rms at power factor 0.8, what real power and apparent power are given?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "How is motor efficiency defined, and what efficiency and total losses result from 1,000 W input and 850 W shaft output?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 2}]
+    },
+    {
+      "question": "What three types of loss are listed for an electric motor?",
+      "supporting_pages": [{"filename": "electrical_engineering.pdf", "page": 2}]
+    }
+  ]
+}

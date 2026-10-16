@@ -1,0 +1,39 @@
+# Model IDs and list prices verified from official documentation on 2026-10-15.
+# Prices are USD per 1,000,000 input tokens; estimates do not subtract credits.
+settings:
+  pdf_dir: data/pdfs
+  index_dir: data/indexes
+  report_dir: reports
+  evaluation_file: evaluation_questions.json
+  metrics_file: data/metrics.json
+  max_pdfs: 10
+  chunk_size: 1000
+  chunk_overlap: 150
+  sparse_page_chars: 40
+  api_batch_size: 64
+
+models:
+  openai-small:
+    provider: openai
+    model_id: text-embedding-3-small
+    api_key_env: OPENAI_API_KEY
+    price_per_million_tokens: 0.02
+    price_checked: "2026-10-15"
+    price_source: https://developers.openai.com/api/docs/pricing
+    sdk_source: https://developers.openai.com/api/docs/guides/embeddings
+  openai-large:
+    provider: openai
+    model_id: text-embedding-3-large
+    api_key_env: OPENAI_API_KEY
+    price_per_million_tokens: 0.13
+    price_checked: "2026-10-15"
+    price_source: https://developers.openai.com/api/docs/pricing
+    sdk_source: https://developers.openai.com/api/docs/guides/embeddings
+  voyage-4:
+    provider: voyage
+    model_id: voyage-4
+    api_key_env: VOYAGE_API_KEY
+    price_per_million_tokens: 0.06
+    price_checked: "2026-10-15"
+    price_source: https://docs.voyageai.com/docs/pricing
+    sdk_source: https://docs.voyageai.com/docs/embeddings

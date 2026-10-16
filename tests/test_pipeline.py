@@ -1,0 +1,114 @@
+"""Offline tests for the PDF pipeline and local retrieval behavior."""
+
+from __future__ import annotations
+
+from pathlib import Path
+import tempfile
+import unittest
+
+import pymupdf
+import numpy as np
+
+from embedding_providers import EmbedResult
+from evaluate import evaluate_provider
+from pdf_processor import extract_and_chunk, split_text
+from retrieval import index_chunks, retrieve
+
+
+class FakeProvider:
+    model_id = "fake-test-model"
+
+    def __init__(self):
+        self.calls: list[list[str]] = []
+
+    def embed(self, texts: list[str], input_type: str = "document") -> EmbedResult:
+        self.calls.append(list(texts))
+        vectors = []
+        for text in texts:
+            if "blue" in text.lower() or "blue" in input_type.lower():
+                vectors.append([1.0, 0.0, 0.0])
+            elif "green" in text.lower():
+                vectors.append([0.0, 1.0, 0.0])
+            else:
+                vectors.append([0.0, 0.0, 1.0])
+        if input_type == "query":
+            vectors = [[1.0, 0.0, 0.0] for _ in texts]
+        return EmbedResult(np.asarray(vectors, dtype=np.float32), 3 * len(texts))
+
+
+class PipelineTests(unittest.TestCase):
+    def test_split_text_keeps_overlap(self):
+        text = "alpha beta gamma delta epsilon zeta eta theta"
+        chunks = split_text(text, chunk_size=20, overlap=5)
+        self.assertGreater(len(chunks), 1)
+        self.assertTrue(all(chunks))
+        self.assertIn("beta", chunks[0])
+
+    def test_extracts_page_metadata_and_flags_sparse_page(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            pdf_dir = Path(temporary_directory)
+            document = pymupdf.open()
+            page = document.new_page()
+            page.insert_text(
+                (72, 72),
+                "This is selectable text on a page and it has enough characters to avoid an OCR warning.",
+            )
+            document.new_page()
+            pdf_path = pdf_dir / "sample.pdf"
+            document.save(pdf_path)
+            document.close()
+
+            chunks, warnings = extract_and_chunk(
+                pdf_dir, chunk_size=200, overlap=20, sparse_page_chars=40
+            )
+            self.assertEqual(chunks[0]["filename"], "sample.pdf")
+            self.assertEqual(chunks[0]["page"], 1)
+            self.assertTrue(any("page(s) 2" in warning for warning in warnings))
+
+    def test_index_cache_prevents_repeat_embedding_and_retrieves_top_five(self):
+        chunks = [
+            {"chunk_id": "one", "text": "blue sky", "filename": "a.pdf", "page": 1},
+            {"chunk_id": "two", "text": "green field", "filename": "a.pdf", "page": 2},
+        ]
+        provider = FakeProvider()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            index_dir = Path(temporary_directory)
+            first = index_chunks(provider, "fake", chunks, index_dir, 0.02)
+            second = index_chunks(provider, "fake", chunks, index_dir, 0.02)
+            self.assertEqual(first["newly_embedded_chunks"], 2)
+            self.assertEqual(second["newly_embedded_chunks"], 0)
+            self.assertEqual(len(provider.calls), 1)
+
+            result = retrieve(provider, "fake", "blue question", index_dir, top_k=5)
+            self.assertEqual(result["matches"][0]["filename"], "a.pdf")
+            self.assertEqual(result["matches"][0]["page"], 1)
+            self.assertGreater(result["matches"][0]["similarity"], 0.99)
+
+    def test_page_labels_produce_hit_rate_at_one_and_five(self):
+        chunks = [
+            {"chunk_id": "one", "text": "blue sky", "filename": "a.pdf", "page": 1},
+            {"chunk_id": "two", "text": "green field", "filename": "a.pdf", "page": 2},
+        ]
+        provider = FakeProvider()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            index_dir = Path(temporary_directory)
+            index_chunks(provider, "fake", chunks, index_dir, 0.02)
+            metrics = evaluate_provider(
+                provider,
+                "fake",
+                [
+                    {
+                        "question": "blue question",
+                        "supporting_pages": [{"filename": "a.pdf", "page": 2}],
+                    }
+                ],
+                index_dir,
+                0.02,
+            )
+
+        self.assertEqual(metrics["hit_rate_at_1"], 0.0)
+        self.assertEqual(metrics["hit_rate_at_5"], 1.0)
+
+
+if __name__ == "__main__":
+    unittest.main()

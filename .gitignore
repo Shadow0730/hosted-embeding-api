@@ -1,0 +1,13 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+
+# PDFs and derived local indexes may contain private documents.
+data/pdfs/*
+!data/pdfs/.gitkeep
+data/indexes/*
+!data/indexes/.gitkeep
+data/metrics.json
+reports/*.csv
+reports/*.md
