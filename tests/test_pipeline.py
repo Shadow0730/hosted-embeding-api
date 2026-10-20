@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -83,6 +84,43 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(result["matches"][0]["filename"], "a.pdf")
             self.assertEqual(result["matches"][0]["page"], 1)
             self.assertGreater(result["matches"][0]["similarity"], 0.99)
+
+    def test_legacy_numpy_cache_migrates_without_reembedding(self):
+        chunks = [
+            {"chunk_id": "one", "text": "blue sky", "filename": "a.pdf", "page": 1},
+            {"chunk_id": "two", "text": "green field", "filename": "a.pdf", "page": 2},
+        ]
+        provider = FakeProvider()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            index_dir = Path(temporary_directory)
+            np.savez_compressed(
+                index_dir / "fake.npz",
+                ids=np.asarray(["one", "two"], dtype=str),
+                vectors=np.asarray([[1, 0, 0], [0, 1, 0]], dtype=np.float32),
+            )
+            (index_dir / "fake.json").write_text(
+                json.dumps(
+                    {
+                        "model_id": provider.model_id,
+                        "chunks": chunks,
+                        "billing": {
+                            "tokens": 6,
+                            "cost_usd_estimate": 0.00000012,
+                            "token_sources": ["provider-reported"],
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = index_chunks(provider, "fake", chunks, index_dir, 0.02)
+            retrieved = retrieve(provider, "fake", "blue question", index_dir)
+
+            self.assertEqual(result["newly_embedded_chunks"], 0)
+            self.assertEqual(result["cached_chunks"], 2)
+            self.assertEqual(provider.calls, [["blue question"]])
+            self.assertEqual(retrieved["matches"][0]["filename"], "a.pdf")
+            self.assertEqual(retrieved["matches"][0]["page"], 1)
 
     def test_page_labels_produce_hit_rate_at_one_and_five(self):
         chunks = [

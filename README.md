@@ -3,11 +3,11 @@
 A small, step-by-step Python project for learning a retrieval pipeline:
 
 ```text
-PDF files -> page text -> shared text chunks -> hosted embeddings -> local files
+PDF files -> page text -> shared text chunks -> hosted embeddings -> local Chroma
                                                            question -> top passages
 ```
 
-It compares two OpenAI embedding models and one Voyage AI model. It does not generate answers, run a web app, or require a database. Retrieval results are the PDF passages themselves.
+It compares two OpenAI embedding models and one Voyage AI model. It does not generate answers or run a web app. Chroma stores and searches vectors in a local persistent database; retrieval results are the PDF passages themselves.
 
 For the guided, cell-by-cell learning path, open [`embedding_model_comparison.ipynb`](embedding_model_comparison.ipynb) in Jupyter or VS Code. It uses the same modules and settings as the CLI below. Run cells in order; the indexing, question, and evaluation cells can incur hosted API charges.
 
@@ -33,7 +33,7 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-`PyMuPDF` extracts selectable PDF text, `numpy` handles cosine similarity, and the two provider SDKs call embedding APIs. The project uses plain JSON and NumPy files for its local index.
+`PyMuPDF` extracts selectable PDF text, Chroma handles local vector storage and cosine search, and the two provider SDKs call embedding APIs.
 
 ## 2. Add PDFs and API Keys
 
@@ -60,7 +60,9 @@ For each provider with a configured key, the program:
 2. Warns when a page has little or no selectable text. Scanned pages need OCR before this project can read them.
 3. Splits extracted pages into shared overlapping chunks. Every model sees the same chunk text.
 4. Sends only uncached chunks to each configured embedding provider.
-5. Stores each model's vectors separately under `data/indexes/`.
+5. Stores each model's vectors in a separate Chroma collection under `data/indexes/chroma/`.
+
+Chroma runs embedded in this Python process, so there is no separate server or Docker command. Existing `.npz` indexes are imported into Chroma on the next `index` run without re-embedding their chunks.
 
 The cache key is based on the chunk text, filename, page, chunk order, and model ID. Re-running index does not repeat embedding calls for unchanged chunks. Changed chunks are sent again. Changing chunk size or overlap changes the chunks and can require new paid requests.
 
@@ -72,7 +74,7 @@ First index the PDFs, then choose a configured model key:
 python main.py ask --model openai-small --question "What does the document say about this topic?"
 ```
 
-Other model keys are `openai-large` and `voyage-4`. The program embeds the question with the selected model, calculates NumPy cosine similarity against that model's vectors, and prints up to five passages with filenames, pages, and similarity scores.
+Other model keys are `openai-large` and `voyage-4`. The program embeds the question with the selected model, asks that model's Chroma collection for the nearest vectors, and prints up to five passages with filenames, pages, and similarity scores.
 
 Similarity scores rank results; they are **not accuracy percentages**. There is no answer-generation step.
 
@@ -118,7 +120,7 @@ If no active labels are present, the report shows `N/A` for hit rates and states
 
 - **Indexing time** includes the measured indexing operation; it is close to zero when chunks are fully cached.
 - **Question-embedding time** is the time spent on the provider call for an evaluation question.
-- **Local search time** measures the NumPy ranking step, not network time.
+- **Local search time** measures the Chroma vector search, not network time.
 - **Token counts** use provider-reported usage when available. Otherwise the project marks a rough character-based estimate in `data/metrics.json`.
 - **Estimated API cost** is based on configured per-million-token list prices and observed or estimated token counts. Estimates do not subtract account credits, free-token allowances, discounts, taxes, or other billing adjustments. Provider invoices are authoritative.
 - Index cost in the report is cumulative in the local metrics file, not a billing statement.
@@ -134,12 +136,12 @@ Prices in `config.yaml` were checked on **2026-10-15** against these official so
 - `main.py`: CLI commands for indexing, questions, evaluation, and report generation.
 - `pdf_processor.py`: PyMuPDF page extraction and shared overlapping chunks.
 - `embedding_providers.py`: small OpenAI and Voyage adapters.
-- `retrieval.py`: per-model cache, embedding timings, and NumPy cosine search.
+- `retrieval.py`: per-model Chroma collections, legacy-cache migration, and retrieval timings.
 - `evaluate.py`: page-hit evaluation and CSV/Markdown export.
 - `config.yaml`: model IDs, chunk settings, and documented prices.
 - `evaluation_questions.json`: editable manual labels.
 - `data/pdfs/`: input PDFs.
-- `data/indexes/`: local model vectors and chunk metadata.
+- `data/indexes/chroma/`: local persistent Chroma database; excluded from Git because it may contain private document text.
 - `tests/test_pipeline.py`: tests using a generated PDF and a fake provider; no paid API calls.
 
 ## Run the Offline Tests
