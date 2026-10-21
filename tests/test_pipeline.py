@@ -9,7 +9,9 @@ import unittest
 
 import pymupdf
 import numpy as np
+from fastapi.testclient import TestClient
 
+from api import create_app
 from embedding_providers import EmbedResult
 from evaluate import evaluate_provider
 from pdf_processor import extract_and_chunk, split_text
@@ -38,6 +40,48 @@ class FakeProvider:
 
 
 class PipelineTests(unittest.TestCase):
+    def test_search_api_requires_key_and_returns_source_passages(self):
+        chunks = [
+            {
+                "chunk_id": "one",
+                "text": "The agreement runs for one year.",
+                "filename": "agreement.pdf",
+                "page": 4,
+                "chunk_number": 1,
+            }
+        ]
+        provider = FakeProvider()
+        config = {
+            "settings": {"api_batch_size": 64},
+            "models": {"fake": {"price_per_million_tokens": 0.02}},
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            index_dir = Path(temporary_directory)
+            index_chunks(provider, "fake", chunks, index_dir, 0.02)
+            app = create_app(
+                config=config,
+                index_dir=index_dir,
+                providers={"fake": provider},
+                api_key="test-secret",
+            )
+            client = TestClient(app)
+
+            unauthorized = client.post(
+                "/v1/search", json={"question": "agreement term", "model": "fake"}
+            )
+            response = client.post(
+                "/v1/search",
+                headers={"X-API-Key": "test-secret"},
+                json={"question": "agreement term", "model": "fake"},
+            )
+
+        self.assertEqual(unauthorized.status_code, 401)
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["matches"][0]["filename"], "agreement.pdf")
+        self.assertEqual(payload["matches"][0]["page"], 4)
+        self.assertIn("similarity", payload["matches"][0])
+
     def test_split_text_keeps_overlap(self):
         text = "alpha beta gamma delta epsilon zeta eta theta"
         chunks = split_text(text, chunk_size=20, overlap=5)

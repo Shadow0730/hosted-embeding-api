@@ -78,7 +78,37 @@ Other model keys are `openai-large` and `voyage-4`. The program embeds the quest
 
 Similarity scores rank results; they are **not accuracy percentages**. There is no answer-generation step.
 
-## 5. Add Evaluation Labels
+## 5. Serve Search Results to Other Services
+
+The HTTP API returns ranked PDF passages with filenames and page numbers. It does not generate a legal answer. Configure a service-to-service key in `.env`:
+
+```dotenv
+LEGALAI_API_KEY=use-a-long-random-secret
+```
+
+Start the API from the project folder after indexing the PDFs:
+
+```bash
+python -m uvicorn api:app --host 0.0.0.0 --port 8000
+```
+
+Other services can call `POST /v1/search` with the key in the `X-API-Key` header:
+
+```powershell
+$headers = @{ "X-API-Key" = $env:LEGALAI_API_KEY }
+$body = @{
+  question = "What is the agreement term?"
+  model = "openai-small"
+  top_k = 5
+} | ConvertTo-Json
+
+Invoke-RestMethod -Method Post -Uri "http://localhost:8000/v1/search" `
+  -Headers $headers -ContentType "application/json" -Body $body
+```
+
+The JSON response includes `matches` containing passage text, filename, page, chunk number, and similarity, plus query timing and estimated usage. `top_k` must be between 1 and 20. Use HTTPS and store the key in a secret manager in deployed environments; do not commit it or send it to browser clients. `GET /health` is an unauthenticated liveness check. API documentation is available at `/docs` while the service is running.
+
+## 6. Add Evaluation Labels
 
 Edit `evaluation_questions.json`. Replace the clearly marked example with questions answerable from your own PDFs. For every question, list at least one filename and 1-based page that contains a supporting passage:
 
@@ -97,7 +127,7 @@ Edit `evaluation_questions.json`. Replace the clearly marked example with questi
 
 A correct supporting page is counted as a hit if it appears at rank 1 (Hit Rate@1) or in the first five results (Hit Rate@5). Use real questions and check their supporting pages yourself. The example entry has `example_only: true` and is ignored, so this project does not invent evaluation results.
 
-## 6. Evaluate and Export Reports
+## 7. Evaluate and Export Reports
 
 ```bash
 python main.py evaluate

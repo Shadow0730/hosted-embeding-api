@@ -5,3 +5,6 @@ voyageai>=0.3
 python-dotenv>=1.0
 PyYAML>=6.0
 chromadb>=1.0.0
+fastapi>=0.115
+httpx>=0.27
+uvicorn[standard]>=0.30
