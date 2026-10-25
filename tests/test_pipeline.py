@@ -1,14 +1,21 @@
-"""Offline tests for the PDF pipeline and local retrieval behavior."""
+"""Offline tests for the PDF pipeline and PostgreSQL retrieval behavior.
+
+Retrieval tests need TEST_DATABASE_URL pointing at a disposable PostgreSQL
+database with pgvector available; they drop and recreate its tables.
+"""
 
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 import pymupdf
 import numpy as np
+import psycopg
 from fastapi.testclient import TestClient
 
 from api import create_app
@@ -39,7 +46,23 @@ class FakeProvider:
         return EmbedResult(np.asarray(vectors, dtype=np.float32), 3 * len(texts))
 
 
+TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL")
+requires_database = unittest.skipUnless(
+    TEST_DATABASE_URL, "set TEST_DATABASE_URL to a disposable PostgreSQL database"
+)
+
+
 class PipelineTests(unittest.TestCase):
+    def setUp(self):
+        if not TEST_DATABASE_URL:
+            return
+        environment = mock.patch.dict(os.environ, {"DATABASE_URL": TEST_DATABASE_URL})
+        environment.start()
+        self.addCleanup(environment.stop)
+        with psycopg.connect(TEST_DATABASE_URL) as connection:
+            connection.execute("DROP TABLE IF EXISTS embedding_chunks")
+
+    @requires_database
     def test_search_api_requires_key_and_returns_source_passages(self):
         chunks = [
             {
@@ -110,6 +133,7 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(chunks[0]["page"], 1)
             self.assertTrue(any("page(s) 2" in warning for warning in warnings))
 
+    @requires_database
     def test_index_cache_prevents_repeat_embedding_and_retrieves_top_five(self):
         chunks = [
             {"chunk_id": "one", "text": "blue sky", "filename": "a.pdf", "page": 1},
@@ -129,6 +153,7 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(result["matches"][0]["page"], 1)
             self.assertGreater(result["matches"][0]["similarity"], 0.99)
 
+    @requires_database
     def test_legacy_numpy_cache_migrates_without_reembedding(self):
         chunks = [
             {"chunk_id": "one", "text": "blue sky", "filename": "a.pdf", "page": 1},
@@ -166,6 +191,7 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(retrieved["matches"][0]["filename"], "a.pdf")
             self.assertEqual(retrieved["matches"][0]["page"], 1)
 
+    @requires_database
     def test_page_labels_produce_hit_rate_at_one_and_five(self):
         chunks = [
             {"chunk_id": "one", "text": "blue sky", "filename": "a.pdf", "page": 1},

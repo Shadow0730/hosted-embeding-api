@@ -8,6 +8,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException
+import psycopg
 from pydantic import BaseModel, Field
 import yaml
 
@@ -109,6 +110,11 @@ def create_app(
             raise HTTPException(
                 status_code=503,
                 detail="Search index is not ready; index documents first",
+            ) from error
+        except psycopg.Error as error:
+            raise HTTPException(
+                status_code=503,
+                detail="The search database is unavailable",
             ) from error
         except Exception as error:
             raise HTTPException(
